@@ -150,10 +150,10 @@ export default function Sub5ChildSection2(){
                         
                     </ul>
                     <button onClick={onClickLeftArrow} className="left-btn">
-                        <i class="fa fa-angle-left"></i>
+                        <i className="fa fa-angle-left"></i>
                     </button>
                     <button onClick={onClickRightArrow} className="right-btn">
-                        <i class="fa fa-angle-right"></i>
+                        <i className="fa fa-angle-right"></i>
                     </button>
                 </div>
             </div>

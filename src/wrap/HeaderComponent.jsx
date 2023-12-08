@@ -1,12 +1,18 @@
 import React from "react";
 import './scss/Header.scss';
 import { Outlet, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { signIn } from "../reducer/signIn";
+
 
 
 export default  function HeaderComponent(){
 
     const CategoryList = React.useRef(); 
-    
+    const selector = useSelector((state)=>state);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     
     const row3 = React.useRef(); 
 
@@ -431,8 +437,14 @@ export default  function HeaderComponent(){
         })
     }
 
-    
+    const onClickLogout=(e)=>{
+        e.preventDefault();
 
+        dispatch(signIn(null));
+        localStorage.removeItem('RANKING_SIGNIN_DATA');
+        navigate('/index');
+    }
+    
     return(
         <>
             <header id="header">
@@ -440,13 +452,32 @@ export default  function HeaderComponent(){
                     <div className="container">
                         <div className="content">
                             <aside id="aside">
-                                <Link to="/login">로그인</Link>
-                                <i>|</i>                            
-                                <Link to="/signupAgree">회원가입</Link>
-                                <i>|</i>
-                                <a href="!#">주문조회</a>
-                                <i>|</i>
-                                <a href="!#">고객센터</a>
+                               { 
+                                selector.signIn.로그인정보 === null && (
+                                        <>
+                                            <Link to="/login">로그인</Link>
+                                            <i>|</i>                            
+                                            <Link to="/signupAgree">회원가입</Link>
+                                            <i>|</i>
+                                            <a href="!#">주문조회</a>
+                                            <i>|</i>
+                                            <a href="!#">고객센터</a>
+                                        </>
+                                    )
+                                }
+                               { 
+                                selector.signIn.로그인정보 !== null && (
+                                        <>
+                                            <a href="!#" onClick={onClickLogout}>로그아웃</a>
+                                            <i>|</i>                            
+                                            <a href="!#">내정보</a>
+                                            <i>|</i>
+                                            <a href="!#">주문조회</a>
+                                            <i>|</i>
+                                            <a href="!#">고객센터</a>
+                                        </>
+                                    )
+                                }
                             </aside>
                         </div>
                     </div>

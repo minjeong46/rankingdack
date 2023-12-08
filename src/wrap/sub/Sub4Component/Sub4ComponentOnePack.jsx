@@ -1,11 +1,15 @@
 import React from "react";
 import '../scss/sub4.scss';
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../../reducer/quickMenuViewProduct';
 
 
 export default function Sub4ComponentOnePack({onepackProduct}){
 
     const selector = useSelector((state)=>state);
+    const dispatch = useDispatch();
 
 
     // 상태관리변수
@@ -247,6 +251,58 @@ export default function Sub4ComponentOnePack({onepackProduct}){
         });
     }
 
+
+     // 최근본상품 클릭이벤트
+     const onClickViewProduct=(e,item,path)=>{
+        e.preventDefault();
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}/sub4/${item.이미지}`,
+            제품명: item.제품명,
+            판매가: item.가격,
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
+
     return (
         <div className="onepack-wrap">
             <div className="tabmenu">
@@ -342,7 +398,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product1 && (
                             onepackProduct.pack1.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -382,7 +438,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product2 && (
                             onepackProduct.pack2.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -422,7 +478,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product3 && (
                             onepackProduct.pack3.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -462,7 +518,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product4 && (
                             onepackProduct.pack4.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -502,7 +558,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product5 && (
                             onepackProduct.pack5.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -542,7 +598,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product6 && (
                             onepackProduct.pack6.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -582,7 +638,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product7 && (
                             onepackProduct.pack7.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -622,7 +678,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product8 && (
                             onepackProduct.pack8.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -662,7 +718,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product9 && (
                             onepackProduct.pack9.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
@@ -702,7 +758,7 @@ export default function Sub4ComponentOnePack({onepackProduct}){
                         state.product10 && (
                             onepackProduct.pack10.map((item, idx)=>{
                                 return (
-                                    <li className={`item item${idx+1}`} key={item.번호}>
+                                    <li className={`item item${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <div className="item-img-box">
                                             <a href="!#">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />

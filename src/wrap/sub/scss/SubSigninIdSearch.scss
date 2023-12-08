@@ -1,4 +1,4 @@
-#signin-search {
+.signin-search {
     width: 100%;
     height: 100%;
     #section1 {
@@ -268,6 +268,15 @@
                         border: 0;
                         height: 1px;
                         background: #ddd;
+                    }
+                }
+                .service-box {
+                    width: 100%;
+                    img {
+                        border: 1px solid #eee;
+                        &:last-child{
+                            border-top: 0;
+                        }
                     }
                 }
             }
