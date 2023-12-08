@@ -1,7 +1,14 @@
 import React from 'react';
 import '../scss/sub4.scss';
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../../reducer/quickMenuViewProduct';
 
 export default function Sub4ComponentBest({bestProduct}){
+
+    const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
     
     // 컨테이너 지정변수
     const refContainer = React.useRef();
@@ -96,6 +103,59 @@ export default function Sub4ComponentBest({bestProduct}){
         }
     },[state.cnt]);
 
+
+    // 최근본상품 클릭이벤트
+    const onClickViewProduct=(e,item,path)=>{
+        e.preventDefault();
+        // console.log(item.이미지);
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}/sub4/${item.이미지}`,
+            제품명: item.제품명,
+            판매가: item.가격,
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
+
     
     return (
         <div className="best-product">
@@ -111,7 +171,7 @@ export default function Sub4ComponentBest({bestProduct}){
                             {
                                 bestProduct.map((item, idx)=>{
                                     return (
-                                        <li className={`product product${idx+1}`} key={item.번호}>
+                                        <li className={`product product${idx+1}`} key={item.번호} onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                             <div className="img-box">
                                                 <img src={`./images/sub/sub4/${item.이미지}`} alt="" />
                                             </div>

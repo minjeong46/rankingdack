@@ -11,11 +11,15 @@ export default function SubLoginComponent () {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
 
     const [ state, setState ] = React.useState({
         아이디: '',
         비밀번호: '',
-        로그인정보: {}
+        로그인정보: {},
+        
+        자동로그인: '',
+        아이디저장: '',
     })
 
     const onClickIdSearch=(e)=>{
@@ -23,7 +27,8 @@ export default function SubLoginComponent () {
         navigate('/signinIdSearch');
     }
     const onClickPwSearch=(e)=>{
-        // navigate('/signinIdSearch');
+        e.preventDefault();
+        navigate('/signinPwSearch');
     }
 
     const onChangeId=(e)=>{
@@ -41,6 +46,19 @@ export default function SubLoginComponent () {
 
     const onClickSignup=(e)=>{
         navigate('/signupAgree');
+    }
+
+    const onChangeAutoLogin=(e)=>{
+        setState({
+            ...state,
+            자동로그인: e.target.checked
+        })
+    }
+    const onChangeIdSave=(e)=>{
+        setState({
+            ...state,
+            아이디저장: e.target.checked
+        })
     }
     
 
@@ -63,13 +81,19 @@ export default function SubLoginComponent () {
                     alert('로그인 실패하였습니다. 아이디, 비밀번호가 맞는지 다시 확인해주세요');
                 }
                 else {
-                    let toDay = new Date();
-                    toDay.setDate(toDay.getDate() + 1);
+                    let toDay1 = new Date();
+                    toDay1.setDate(toDay1.getDate() + 1);
+                    let toDay2 = new Date();
+                    toDay2.setDate(toDay2.getDate() + 365);
 
                     const 로그인정보 = {
                         아이디: res.data.아이디,
+                        이름: res.data.이름,
+                        휴대폰: res.data.휴대폰,
+                        이메일: res.data.이메일,
                         가입일: res.data.가입일,
-                        만료일: res.data.만료일,
+                        만료일: `${state.자동로그인===true?toDay2.getTime():toDay1.getTime()}`,
+                        
                     }
                     localStorage.setItem('RANKING_SIGNIN_DATA', JSON.stringify(로그인정보));
 
@@ -87,6 +111,7 @@ export default function SubLoginComponent () {
         })
     }
 
+    
 
     return (
         <div id='login'>
@@ -114,7 +139,7 @@ export default function SubLoginComponent () {
                                 <li>
                                     <div className="gap">
                                         <input
-                                            type="text"
+                                            type="password"
                                             id='userPw'
                                             name='userPw'
                                             placeholder='비밀번호'
@@ -125,9 +150,9 @@ export default function SubLoginComponent () {
                                 </li>
                                 <li>
                                     <div className="gap">
-                                        <input type="checkbox" id='autoLogin' name='autoLogin' value={'자동로그인'} />
+                                        <input type="checkbox" id='autoLogin' name='autoLogin' value={'자동로그인'} onChange={onChangeAutoLogin}/>
                                         <label htmlFor="autoLogin">자동로그인</label>
-                                        <input type="checkbox" id='idSave' name='idSave' value={'아이디저장'} />
+                                        <input type="checkbox" id='idSave' name='idSave' value={'아이디저장'} onChange={onChangeIdSave} />
                                         <label htmlFor="idSave">아이디저장</label>
                                     </div>
                                 </li>

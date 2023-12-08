@@ -1,10 +1,14 @@
 import React from "react";
 import './scss/sub6.scss';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Sub6Component(){
     
+    const navigate = useNavigate();
+
+
     // 상태관리변수
     const [state, setState] = React.useState({
         event: []
@@ -31,6 +35,12 @@ export default function Sub6Component(){
         });
     },[])
 
+    // 당첨자 발표
+    const onClickCongrats=(e)=>{
+        e.preventDefault();
+        navigate('/sub6Congrats');
+    }
+
     
     return (
         <div id="sub6">
@@ -49,7 +59,7 @@ export default function Sub6Component(){
                                 <li>|</li>
                                 <li>종료된 이벤트</li>
                             </ul>
-                            <a href="!#">
+                            <a onClick={onClickCongrats} href="!#">
                                 <i className="icon"></i>
                                 <span>당첨자 발표 보기</span>
                             </a>

@@ -3,10 +3,14 @@ import './scss/sub4.scss';
 import Sub4ComponentOnePack from "./Sub4Component/Sub4ComponentOnePack";
 import Sub4ComponentBest from "./Sub4Component/Sub4ComponentBest";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { sub4Modal } from "../../reducer/sub4Modal";
 
 
 export default function Sub4Component(){
     
+    const dispatch = useDispatch();
+
 
     // 상태관리변수
     const [state, setState] = React.useState({
@@ -25,7 +29,6 @@ export default function Sub4Component(){
         }
     });
 
-    
     
     // AXIOS: 한번만 실행
     React.useEffect(()=>{
@@ -60,14 +63,21 @@ export default function Sub4Component(){
         
     },[])
     
+    // 배너이미지클릭
+    const onClickBanner=(e)=>{
+        e.preventDefault();
+        dispatch(sub4Modal(true));
 
+        const htmlEl = document.getElementsByTagName('html')[0];
+        htmlEl.classList.add('on');
+    }
 
     return (
         <div id="sub" className="sub4">
             <div className="container">
                 
                 <div className="title-banner">
-                    <a href="!#">
+                    <a onClick={onClickBanner} href="!#">
                         <img src="./images/sub/sub4/IMG1684TXn130827225.jpg" alt="" />
                     </a>
                 </div>

@@ -16,9 +16,15 @@ export default function SubSignInIdSearchComponent () {
         입력인증번호: '',
         발급인증번호: '',
         isPhoneSuccess: false,
+        isEmailSuccess: false,
+
+        phoneCheck: false, // 폰확인하여 인증번호 받았는지 여부
+        isPhoneBtn1: false, // 핸드폰번호 정규표현식에 맞는지 여부
+        isPhoneBtn2: false, // 인증번호 정규표현식에 맞는지 여부
 
         이메일: '',
         이름: '',
+        아이디: '',
 
         isPhone: true,
         isEmail: false,
@@ -28,7 +34,10 @@ export default function SubSignInIdSearchComponent () {
     })
 
     const onChangePhone=(e)=>{
+        const {value} = e.target;
         let isPhoneNum = false;
+        let isPhoneBtn1 = false;
+        const regExp = /^01[0-9]{1}[0-9]{3,4}[0-9]{4}$/g
 
         if(e.target.value.length > 0 ){
             isPhoneNum = true;
@@ -36,18 +45,33 @@ export default function SubSignInIdSearchComponent () {
         else {
             isPhoneNum = false;
         }
+        if(regExp.test(value)===true){
+            isPhoneBtn1 = true;
+        }
+
         setState({
             ...state,
-            휴대폰: e.target.value,
-            isPhoneNum: isPhoneNum
+            휴대폰: value,
+            isPhoneNum: isPhoneNum,
+            isPhoneBtn1: isPhoneBtn1,
         })
     }
 
 
     const onChangePhone2=(e)=>{
+        const {value} = e.target;
+        let isPhoneBtn2 = false;
+
+        if(value.length===5 && state.phoneCheck===true){
+            isPhoneBtn2 = true;
+        }
+        else {
+            isPhoneBtn2 = false;
+        }
         setState({
             ...state,
-            입력인증번호: e.target.value,
+            입력인증번호: value,
+            isPhoneBtn2: isPhoneBtn2,
         })
     }
     const onClickPhoneCheck=(e)=>{
@@ -75,18 +99,22 @@ export default function SubSignInIdSearchComponent () {
 
         const regExp = /^01[0-9]{1}[0-9]{3,4}[0-9]{4}$/g
         let num = null;
+        let phoneCheck = false;
 
         num = Math.floor(Math.random() * 90000 + 10000);
 
         if(regExp.test(state.휴대폰)===false){
-            alert('잘못된 휴대폰 번호입니다')
+            alert('잘못된 휴대폰 번호입니다');
+            phoneCheck = false;
 
         } else {
             alert(`인증번호 : ${num}`);
+            phoneCheck = true;
         }
         setState({
             ...state,
-            발급인증번호: num
+            발급인증번호: num,
+            phoneCheck: phoneCheck,
         })
 
     }
@@ -189,6 +217,9 @@ export default function SubSignInIdSearchComponent () {
     }
 
     const onChangeName=(e)=>{
+
+
+
         setState({
             ...state,
             이름: e.target.value,
@@ -238,10 +269,23 @@ export default function SubSignInIdSearchComponent () {
         .then((res)=>{
             if(res.status===200){
                 if(res.data===0){
-                    alert('휴대폰 번호를 확인하고 다시 시도해주세요')
+                    alert('입력하신 이름과 휴대폰이 일치하는 회원이 없거나 다른 방법(이메일/휴대폰)으로 가입 인증된 회원입니다.');
+                    
                 }
                 else {
-                    alert('성공하였습니다.')
+
+                    console.log(res.data.아이디)
+                    // setState({
+                    //     아이디: res.data.아이디
+                    // })
+
+                        navigate('/signinIdSearchResult', {
+                            state : {
+                                아이디: res.data.아이디
+                            }
+                        })
+
+
                 }
             }
         })
@@ -249,6 +293,22 @@ export default function SubSignInIdSearchComponent () {
 
         })
     }
+
+    React.useEffect(()=>{
+
+        let isEmailSuccess = false;
+        if(state.이름!=='' && state.이메일!==''){
+            isEmailSuccess = true;
+        }
+        else {
+            isEmailSuccess = false;
+        }
+
+        setState({
+            ...state,
+            isEmailSuccess: isEmailSuccess
+        })
+    },[state.이름,state.이메일])
 
     const onSubmitEmail=(e)=>{
         e.preventDefault();
@@ -264,10 +324,15 @@ export default function SubSignInIdSearchComponent () {
         .then((res)=>{
             if(res.status===200){
                 if(res.data===0){
-                    alert('이메일을 확인하고 다시 시도해주세요')
+                    alert('입력하신 이름과 이메일이 일치하는 회원이 없거나 다른 방법(이메일/휴대폰)으로 가입 인증된 회원입니다.');
                 }
                 else {
-                    alert('성공하였습니다.')
+
+                    navigate('/signinIdSearchResult', {
+                        state : {
+                            아이디: res.data.아이디
+                        }
+                    })
                 }
             }
         })
@@ -277,7 +342,7 @@ export default function SubSignInIdSearchComponent () {
     }
 
     return (
-        <div id='signin-search'>
+        <div id='signin-pw-search' className='signin-search'>
             <section id="section1">
                 <div className="container">
                     <div className="title">
@@ -289,7 +354,6 @@ export default function SubSignInIdSearchComponent () {
                                 <li>
                                     <div className="gap">
                                         <div className="input-radio-box">
-                                            
                                             <input
                                                     type="radio"
                                                     id='userPhoneSearch'
@@ -326,7 +390,7 @@ export default function SubSignInIdSearchComponent () {
                                                                 onChange={onChangePhone}
                                                                 maxLength={11}
                                                             />
-                                                        <button onClick={onClickPhoneNum}>인증번호</button>
+                                                        <button disabled={!state.isPhoneBtn1} onClick={onClickPhoneNum} className={state.isPhoneBtn1?'on':''}>인증번호</button>
                                                     </div>
                                                     <div className="input-phone-box">
                                                         <input
@@ -337,7 +401,7 @@ export default function SubSignInIdSearchComponent () {
                                                             value={state.입력인증번호}
                                                             onChange={onChangePhone2}
                                                         />
-                                                        <button onClick={onClickPhoneCheck}>확인</button>
+                                                        <button disabled={!state.isPhoneBtn2} onClick={onClickPhoneCheck} className={state.isPhoneBtn2?'on':''}>확인</button>
                                                     </div>
                                                     <div className="input-btn-box">
                                                         <input type="submit" value={'확인'} disabled={!state.isPhoneSuccess} className={state.isPhoneSuccess?'on':''} />
@@ -434,7 +498,7 @@ export default function SubSignInIdSearchComponent () {
                                                         
                                                     </div>
                                                     <div className="input-btn-box">
-                                                        <input type="submit" value={'확인'} />
+                                                        <input type="submit" value={'확인'}  disabled={!state.isEmailSuccess} className={state.isEmailSuccess?'on':''} />
                                                     </div>
                                                 </>
                                             )
@@ -443,6 +507,10 @@ export default function SubSignInIdSearchComponent () {
                                 </li>
                             </ul>
                         </form>
+                        <div className="service-box">
+                            <img src="./images/sub/login/img_cs_bnr01.png" alt="" />
+                            <img src="./images/sub/login/img_cs_bnr02.png" alt="" />
+                        </div>
                     </div>
                 </div>
             </section>

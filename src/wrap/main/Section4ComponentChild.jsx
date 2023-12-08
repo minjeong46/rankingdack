@@ -1,7 +1,14 @@
 import React from 'react';
 import "./scss/section4.scss";
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../reducer/quickMenuViewProduct';
 
 export default function Section4ComponentChild({product, n, timeSale}){
+
+    const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
 
     const [ state, setState ] = React.useState({
 
@@ -25,18 +32,21 @@ export default function Section4ComponentChild({product, n, timeSale}){
 
     const refSlideWrap = React.useRef();
 
-    // 슬라이드 수 너비 자동화
     React.useEffect(()=>{
         refSlideWrap.current.style.width = `${380 * n}px`;
     },[n]);
 
     const mainSlide=()=>{
-        refSlideWrap.current.style.marginLeft = `${-760 * state.cnt}px`; // 282*4=1128
+        refSlideWrap.current.style.left = `${-760 * state.cnt}px`;
         refSlideWrap.current.style.transition = `all 0.3s ease-in-out`;
         if(state.cnt!==0){
             returnSlide();
         }
     }
+
+    React.useEffect(()=>{
+        mainSlide();
+    },[state.cnt])
 
     const returnSlide=()=>{
         if(state.cnt>n/2-1){
@@ -59,9 +69,7 @@ export default function Section4ComponentChild({product, n, timeSale}){
         }
     }
 
-    React.useEffect(()=>{
-        mainSlide();
-    },[state.cnt])
+    
 
     const onClickPrevBtn=(e)=>{
         e.preventDefault();
@@ -167,6 +175,61 @@ export default function Section4ComponentChild({product, n, timeSale}){
     },[state.cnt])
 
 
+
+
+    // 최근본상품 클릭이벤트
+    const onClickViewProduct=(e,item,path)=>{
+        e.preventDefault();
+
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}section4/${item.이미지}`,
+            제품명: item.상품명,
+            판매가: (Math.round(item.가격*(1-item.할인율)/100)*100),
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
+
+
         
 
     return (
@@ -191,7 +254,7 @@ export default function Section4ComponentChild({product, n, timeSale}){
                                         product.item.map((item,idx)=>{
                                             return(
                                                 <li className={`slide slide${idx+1}`} key={item.번호}>
-                                                    <div className="gap">
+                                                    <div className="gap" onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')}>
                                                         <div className="img-box">
                                                             <a href="!#">
                                                                 <div className="main-img"><img src={`./images/intro/section4/${item.이미지}`} alt="" /></div>
