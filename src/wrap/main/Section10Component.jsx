@@ -1,8 +1,15 @@
 import React from 'react';
 import axios from 'axios';
 import './scss/section10.scss'
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../reducer/quickMenuViewProduct';
 
 export default function Section10Component(){
+
+    const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
 
     const slideWrap = React.useRef();
 
@@ -70,6 +77,61 @@ export default function Section10Component(){
         setCnt(cnt=>cnt+1);
     }
     
+
+    // 최근본상품 클릭이벤트
+    const onClickViewProduct=(e,item, path)=>{
+        e.preventDefault();
+
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}/section10/${item.이미지}`,
+            제품명: item.부가설명,
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
+    
+
+
+
     return (
 
         <div id='section10'>
@@ -84,7 +146,7 @@ export default function Section10Component(){
                                 return (
                                     <li className={`list list${idx+1}`} key={item.번호}>
                                         <div className="package-list">
-                                            <img src={`./images/intro/section10/${item.이미지}`} alt="" />
+                                            <img src={`./images/intro/section10/${item.이미지}`} alt=""  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} />
                                             <strong>{item.부가설명}</strong>
                                         </div>
                                     </li>

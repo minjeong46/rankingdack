@@ -1,8 +1,15 @@
 import React from 'react';
 import './scss/section6.scss';
 import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../reducer/quickMenuViewProduct';
 
 export default function Section6Component(){
+
+    const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
 
 
     const [state,setState] = React.useState({
@@ -97,6 +104,60 @@ export default function Section6Component(){
         })
     }
 
+
+
+    // 최근본상품 클릭이벤트
+    const onClickViewProduct=(e,item,path)=>{
+        e.preventDefault();
+
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}section6/${item.이미지}`,
+            제품명: item.상품명,
+            판매가: (Math.round(item.가격*(1-item.할인율)/100)*100),
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
+
     
 
     return (
@@ -130,7 +191,7 @@ export default function Section6Component(){
                                         {
                                             state.제품.map((item, idx)=>{
                                                 return (
-                                                    <li className={`list list${idx+1}`} key={item.번호}>
+                                                    <li className={`list list${idx+1}`} key={item.번호}  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                         <img src={`./images/intro/section6/${item.이미지}`} alt="" />
                                                         <a href="!#">
                                                             <p>{item.제품명}</p>
@@ -162,7 +223,7 @@ export default function Section6Component(){
                                         {
                                             state.제품2.map((item, idx)=>{
                                                 return (
-                                                    <li className={`list list${idx+1}`} key={item}>
+                                                    <li className={`list list${idx+1}`} key={item}  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                         <img src={`./images/intro/section6/${item.이미지}`} alt="" />
                                                         <a href="!#">
                                                             <p>{item.제품명}</p>
@@ -194,7 +255,7 @@ export default function Section6Component(){
                                         {
                                             state.제품3.map((item, idx)=>{
                                                 return (
-                                                    <li className={`list list${idx+1}`} key={item}>
+                                                    <li className={`list list${idx+1}`} key={item}  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                         <img src={`./images/intro/section6/${item.이미지}`} alt="" />
                                                         <a href="!#">
                                                             <p>{item.제품명}</p>
@@ -226,7 +287,7 @@ export default function Section6Component(){
                                         {
                                             state.제품4.map((item, idx)=>{
                                                 return (
-                                                    <li className={`list list${idx+1}`} key={item}>
+                                                    <li className={`list list${idx+1}`} key={item}  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                         <img src={`./images/intro/section6/${item.이미지}`} alt="" />
                                                         <a href="!#">
                                                             <p>{item.제품명}</p>
@@ -258,7 +319,7 @@ export default function Section6Component(){
                                         {
                                             state.제품5.map((item, idx)=>{
                                                 return (
-                                                    <li className={`list list${idx+1}`} key={item}>
+                                                    <li className={`list list${idx+1}`} key={item}  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                         <img src={`./images/intro/section6/${item.이미지}`} alt="" />
                                                         <a href="!#">
                                                             <p>{item.제품명}</p>

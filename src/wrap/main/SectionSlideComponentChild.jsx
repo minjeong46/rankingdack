@@ -160,9 +160,9 @@ export default function SectionSlideComponentChild({product, n, refresh, imgLoca
                                                     <a href="!#">
                                                         <div className="main-img"><img src={`./images/intro/${imgLocation}/${item.이미지}`} alt="" /></div>
                                                         <div className="main-sticker">
-                                                            { item.M정기배송 && <img className="sticker main-sticker-delivery" src='./images/intro/section/IMG1681XzJ889805863.png' alt="" />}
-                                                            { item.M프로 && <img className="sticker main-sticker-pro" src='./images/intro/section/IMG1684oyb914888391.png' alt="" />}
-                                                            { item.M단독상품 && <img className="sticker main-sticker-onlyone" src='./images/intro/section/IMG1681Vpe889708160.png' alt="" />}
+                                                            { item.M정기배송 && <img className="sticker main-sticker-delivery" src='./images/intro/section7/IMG1681XzJ889805863.png' alt="" />}
+                                                            { item.M프로 && <img className="sticker main-sticker-pro" src='./images/intro/section7/IMG1684oyb914888391.png' alt="" />}
+                                                            { item.M단독상품 && <img className="sticker main-sticker-onlyone" src='./images/intro/section7/IMG1681Vpe889708160.png' alt="" />}
                                                         </div>
                                                         
                                                     </a>

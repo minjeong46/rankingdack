@@ -1,8 +1,15 @@
 import React from 'react';
 import './scss/section13.scss';
 import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../reducer/quickMenuViewProduct';
 
 export default function Section13Component(){
+
+    const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
     
     // 상태관리변수
     const [state, setState] = React.useState({
@@ -219,6 +226,60 @@ export default function Section13Component(){
         })
 
     },[])
+
+
+
+    // 최근본상품 클릭이벤트
+    const onClickViewProduct=(e,item,path)=>{
+        e.preventDefault();
+
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}section13/${item.이미지}`,
+            제품명: item.제품명,
+            판매가: (Math.round(item.가격*(1-item.할인율)/100)*100),
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
     
 
     return (
@@ -256,7 +317,7 @@ export default function Section13Component(){
                                             state.product1.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -323,7 +384,7 @@ export default function Section13Component(){
                                             state.product2.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -390,7 +451,7 @@ export default function Section13Component(){
                                             state.product3.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -457,7 +518,7 @@ export default function Section13Component(){
                                             state.product4.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -524,7 +585,7 @@ export default function Section13Component(){
                                             state.product5.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -591,7 +652,7 @@ export default function Section13Component(){
                                             state.product6.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -658,7 +719,7 @@ export default function Section13Component(){
                                             state.product7.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -725,7 +786,7 @@ export default function Section13Component(){
                                             state.product8.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -792,7 +853,7 @@ export default function Section13Component(){
                                             state.product9.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">
@@ -859,7 +920,7 @@ export default function Section13Component(){
                                             state.product10.map((item, idx)=>{
                                                 return (
                                                     <li className={`product-list list${idx+1}`} key={item.번호}>
-                                                        <div className="gap">
+                                                        <div className="gap"  onClick={(e)=>onClickViewProduct(e,item,'./images/intro/')} >
                                                             <div className="product-img">
                                                                 <a href="!#">
                                                                     <div className="image">

@@ -10,6 +10,7 @@ import signIn from './reducer/signIn.js';
 import viewproduct from './reducer/viewproduct';
 import viewProductIsFlag from './reducer/viewProductIsFlag';
 import quickMenuViewProduct from './reducer/quickMenuViewProduct';
+import sub4Modal from './reducer/sub4Modal.js';
 
 let store = configureStore ({
   reducer : {
@@ -19,7 +20,8 @@ let store = configureStore ({
     signIn,
     viewproduct,
     viewProductIsFlag,
-    quickMenuViewProduct
+    quickMenuViewProduct,
+    sub4Modal
   }
 })
 
