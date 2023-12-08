@@ -1,8 +1,15 @@
 import React from 'react';
 import './scss/sub7.scss';
 import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
+import { viewProduct } from '../../reducer/viewproduct';
+import { viewProductIsFlag } from '../../reducer/viewProductIsFlag';
+import { quickMenuViewProduct } from '../../reducer/quickMenuViewProduct';
 
 export default function Sub7ExpressDeliveryComponent(){
+
+    const dispatch = useDispatch();
+    const selector = useSelector((state)=>state);
 
     const [state,setState] = React.useState({
         isClose:false,
@@ -309,6 +316,59 @@ export default function Sub7ExpressDeliveryComponent(){
         })
     }
 
+
+    // 최근본상품 클릭이벤트
+    const onClickViewProduct=(e,item,path)=>{
+        e.preventDefault();
+        // console.log(item.이미지);
+        let obj = {
+            번호: item.번호,
+            이미지: `${path}/sub7/category1/${item.이미지}`,
+            제품명: item.제품명,
+            판매가: item.가격,
+        }
+        dispatch(viewProduct(obj));
+    }
+
+
+    React.useEffect(()=>{
+        let imsi = [];
+        if(localStorage.getItem('VIEW-PRODUCT')===null){
+            if(Object.keys(selector.viewproduct.current).length > 0){
+                imsi = [selector.viewproduct.current];  
+                localStorage.setItem("VIEW-PRODUCT", JSON.stringify(imsi));                
+                dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+            }
+        }
+        else{
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+
+            let filterResult = result.map((item)=>item.번호===selector.viewproduct.current.번호 ? true : false);
+            if(filterResult.includes(true)!==true){
+                if(Object.keys(selector.viewproduct.current).length>0){ 
+                    result = [selector.viewproduct.current, ...result];
+                    localStorage.setItem("VIEW-PRODUCT", JSON.stringify(result));
+                    dispatch(viewProductIsFlag(!selector.viewProductIsFlag.isFlag));
+                }    
+            }   
+        }
+           
+            
+
+    },[selector.viewproduct.current])
+
+    React.useEffect(()=>{
+        
+        if(localStorage.getItem('VIEW-PRODUCT')!==null) {
+            let result = JSON.parse(localStorage.getItem('VIEW-PRODUCT'));
+            if(result.length>0){
+
+                dispatch(quickMenuViewProduct(result));              
+            }            
+        }
+
+    },[selector.viewProductIsFlag.isFlag]);
+
     return (
         <div id='sub7'>
             <div className="container">
@@ -373,12 +433,12 @@ export default function Sub7ExpressDeliveryComponent(){
                             state.isList1 && (
                                 state.제품1.map((item,idx)=>{
                                     return (
-                                        <li>
-                                        <div className="product">
+                                        <li key={idx}>
+                                        <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                             <a href="!#">
                                                 <div className="product-img">
                                                     <img src={`./images/sub/sub7/category1/${item.이미지}`} alt="" />
-                                                    {/* <img src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" /> */}
+                                                    <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                                 </div>
                                             </a>
                                             <div className="bottom">
@@ -387,7 +447,7 @@ export default function Sub7ExpressDeliveryComponent(){
                                                         <img src="./images/sub/sub7/IMG1648CEL614146730.png" alt="" />
                                                     </div>
                                                     <div className="preview">
-                                                        <i class="fa fa-star"></i>
+                                                        <i className="fa fa-star"></i>
                                                         <span>{item.평점}</span>
                                                         <p>({item.리뷰})</p>
                                                     </div>
@@ -411,7 +471,11 @@ export default function Sub7ExpressDeliveryComponent(){
                                                     </div>
                                                 </div>
                                                 <div className="row row4">
-                                                    <img src="./images/sub/sub7/IMG1687Txz850332633.png" alt="" />
+                                                    <img className={`chooga1${item.신상품==="신상품"?' on':''}`} src="./images/sub/sub7/IMG1681Neg889936366.png" alt="" />
+                                                    <img className={`chooga2${item.추가증정==="추가증정"?' on':''}`} src="./images/sub/sub7/category2/IMG1681RXW889944088.png" alt="" />
+                                                    <img className={`chooga3${item.추가적립==="추가적립"?' on':''}`} src="./images/sub/sub7/category2/IMG1681Mbe889953022.png" alt="" />
+                                                    <img className={`chooga4${item.체중조절==="체중조절"?' on':''}`} src="./images/sub/sub7/category2/IMG1681pWa889986238.png" alt="" />
+                                                    <img className={`rank${item.랭크==="랭크"?' on':''}`} src="./images/sub/sub7/IMG1687Txz850332633.png" alt="" />
                                                 </div>
                                             </div>
                                         </div>
@@ -425,8 +489,8 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList2 && (
                             state.제품2.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
                                                 <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
@@ -481,11 +545,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList3 && (
                             state.제품3.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category3/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -507,9 +571,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -537,11 +601,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList4 && (
                             state.제품4.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category4/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -563,9 +627,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -593,11 +657,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList5 && (
                             state.제품5.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category5/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -619,9 +683,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -649,11 +713,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList6 && (
                             state.제품6.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category6/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -675,9 +739,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -705,11 +769,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList7 && (
                             state.제품7.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category7/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -731,9 +795,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -761,11 +825,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList8 && (
                             state.제품8.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category8/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -787,9 +851,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -817,11 +881,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList9 && (
                             state.제품9.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category9/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -843,9 +907,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -873,11 +937,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList10 && (
                             state.제품10.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category10/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -899,9 +963,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -929,11 +993,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList11 && (
                             state.제품11.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category11/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -985,11 +1049,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList12 && (
                             state.제품12.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category12/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
@@ -1011,9 +1075,9 @@ export default function Sub7ExpressDeliveryComponent(){
                                             <div className="row row3">
                                                 <div className="left">
                                                     <div className="price">
-                                                        <strong>{item.할인율*100}<span>%</span></strong>
+                                                        <strong>{item.할인율===0?"":item.할인율*100}<span>{item.할인율===0?"":'%'}</span></strong>
                                                         <h3>{(item.할인가).toLocaleString('ko-KR')}<span>원</span></h3>
-                                                        <p>{item.가격.toLocaleString('ko-KR')}<span>원</span></p>
+                                                        <p>{item.가격===0?"":item.가격.toLocaleString('ko-KR')}<span>{item.가격===0?"":"원"}</span></p>
                                                     </div>
                                                     <div className="price2">
                                                         <p>{item.팩당}</p>
@@ -1041,11 +1105,11 @@ export default function Sub7ExpressDeliveryComponent(){
                         state.isList13 && (
                             state.제품13.map((item,idx)=>{
                                 return (
-                                <li>
-                                    <div className="product">
+                                <li key={idx}>
+                                    <div className="product" onClick={(e)=>onClickViewProduct(e,item, './images/sub')}>
                                         <a href="!#">
                                             <div className="product-img">
-                                                <img src={`./images/sub/sub7/category2/${item.이미지}`} alt="" />
+                                                <img src={`./images/sub/sub7/category13/${item.이미지}`} alt="" />
                                                 <img className={`add1${item.배송==="정기배송"?' on':''}`} src="./images/sub/sub7/category2/IMG1681XzJ889805863.png" alt="" />
                                                 <img className={`add2${item.프로==="프로"?' on':''}`} src="./images/sub/sub7/IMG1684oyb914888391.png" alt="" />
                                             </div>
